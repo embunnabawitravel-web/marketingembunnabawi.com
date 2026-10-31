@@ -58,11 +58,11 @@
                         <p class="text-xs text-indigo-200" id="currentLoginInfo">Login sebagai: -</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="openChangePasswordModal()" class="bg-indigo-700 hover:bg-indigo-800 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
+                <div class="flex items-center gap-2 relative z-30">
+                    <button type="button" onclick="openChangePasswordModal()" class="bg-indigo-700 hover:bg-indigo-800 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer shadow">
                         <i class="fa-solid fa-key"></i> Ganti Password
                     </button>
-                    <button onclick="handleLogout()" class="bg-rose-600 hover:bg-rose-700 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
+                    <button type="button" onclick="handleLogout()" class="bg-rose-600 hover:bg-rose-700 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5 cursor-pointer shadow">
                         <i class="fa-solid fa-right-from-bracket"></i> Keluar
                     </button>
                 </div>
@@ -134,12 +134,12 @@
         </main>
     </div>
 
-    <!-- ================= MODAL KELOLA AGEN & LAINNYA ================= -->
+    <!-- ================= MODAL KELOLA AGEN ================= -->
     <div id="agentModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[85vh]">
             <div class="bg-slate-50 px-6 py-4 border-b border-slate-200 flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 text-base">Kelola Data Agen</h3>
-                <button onclick="closeAgentModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeAgentModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div class="p-6 overflow-y-auto space-y-6">
                 <form onsubmit="addNewAgent(event)" class="flex gap-2">
@@ -156,11 +156,12 @@
         </div>
     </div>
 
+    <!-- ================= MODAL GANTI PASSWORD ================= -->
     <div id="changePasswordModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
             <div class="bg-slate-50 px-6 py-4 border-b flex justify-between items-center">
                 <h3 class="font-bold text-slate-800 text-base">Ganti Kata Sandi Akun</h3>
-                <button onclick="closeChangePasswordModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+                <button type="button" onclick="closeChangePasswordModal()" class="text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <form onsubmit="submitChangePassword(event)" class="p-6 space-y-4">
                 <div>
@@ -182,14 +183,14 @@
 
     <!-- ================= JAVASCRIPT & FIREBASE INTEGRATION ================= -->
     <script>
-        // --- KONFIGURASI FIREBASE ANDA ---
         const firebaseConfig = {
-            apiKey: "MASUKKAN_API_KEY_ANDA_DISINI",
-            authDomain: "MASUKKAN_AUTH_DOMAIN_ANDA",
-            projectId: "MASUKKAN_PROJECT_ID",
-            storageBucket: "MASUKKAN_STORAGE_BUCKET",
-            messagingSenderId: "MASUKKAN_MESSAGING_SENDER_ID",
-            appId: "MASUKKAN_APP_ID"
+            apiKey: "AIzaSyBIuUhqv0drNM78SjAxs-e8qfmVDjDBVFI",
+            authDomain: "marketing-embunnabawi.firebaseapp.com",
+            projectId: "marketing-embunnabawi",
+            storageBucket: "marketing-embunnabawi.firebasestorage.app",
+            messagingSenderId: "496865260588",
+            appId: "1:496865260588:web:151a9dcfb633d3fc5f8d89",
+            measurementId: "G-FMCVEC1BL4"
         };
 
         firebase.initializeApp(firebaseConfig);
@@ -211,9 +212,7 @@
         let marketingList = [];
         let currentUser = localStorage.getItem('pendaftaran_current_user') || null;
 
-        // Ambil data real-time dari Firestore agar tidak hilang saat relog/ganti device
         function initRealtimeSync() {
-            // Sinkronisasi Agen & Password
             db.collection("settings").doc("app_data").onSnapshot((doc) => {
                 if (doc.exists) {
                     agents = doc.data().agents || DEFAULT_AGENTS;
@@ -227,7 +226,6 @@
                 else showLogin();
             });
 
-            // Sinkronisasi Data Marketing
             db.collection("marketing").onSnapshot((snapshot) => {
                 marketingList = [];
                 snapshot.forEach((doc) => {
@@ -323,7 +321,6 @@
                 return;
             }
 
-            // Validasi NIK unik lintas agen dari database cloud
             const existing = marketingList.find(m => m.nik === nik);
             if (existing) {
                 alert(`Gagal! NIK ${nik} sudah terdaftar di Agen "${existing.agen}" atas nama ${existing.nama}.`);
@@ -373,7 +370,7 @@
                     <td class="p-3.5 font-mono text-slate-600">${m.nik}</td>
                     <td class="p-3.5"><span class="bg-indigo-50 text-indigo-700 text-xs px-2.5 py-1 rounded-full font-medium">${m.agen}</span></td>
                     <td class="p-3.5 text-center">
-                        ${canManage ? `<button onclick="deleteMarketing('${m.id}')" class="text-rose-600 hover:text-rose-800 p-1 rounded" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : `<span class="text-xs text-slate-400 italic">Dibaca Saja</span>`}
+                        ${canManage ? `<button type="button" onclick="deleteMarketing('${m.id}')" class="text-rose-600 hover:text-rose-800 p-1 rounded cursor-pointer" title="Hapus"><i class="fa-solid fa-trash"></i></button>` : `<span class="text-xs text-slate-400 italic">Dibaca Saja</span>`}
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -386,17 +383,20 @@
             }
         }
 
+        // --- FUNGSI MODAL GANTI PASSWORD YANG DIPERBAIKI ---
         function openChangePasswordModal() {
             document.getElementById('oldPasswordInput').value = '';
             document.getElementById('newPasswordInput').value = '';
             document.getElementById('changePassAlert').classList.add('hidden');
-            document.getElementById('changePasswordModal').classList.remove('flex');
-            document.getElementById('changePasswordModal').classList.add('flex');
+            const modal = document.getElementById('changePasswordModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeChangePasswordModal() {
-            document.getElementById('changePasswordModal').classList.remove('flex');
-            document.getElementById('changePasswordModal').classList.add('hidden');
+            const modal = document.getElementById('changePasswordModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
         }
 
         async function submitChangePassword(e) {
@@ -420,20 +420,15 @@
         }
 
         function openAgentModal() {
-            const listBody = document.getElementById('agentTableList');
-            listBody.innerHTML = '';
-            agents.forEach(agent => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `<td class="p-3 font-medium text-slate-800">${agent}</td><td class="p-3 text-center">-</td>`;
-                listBody.appendChild(tr);
-            });
-            document.getElementById('agentModal').classList.remove('hidden');
-            document.getElementById('agentModal').classList.add('flex');
+            const modal = document.getElementById('agentModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function closeAgentModal() {
-            document.getElementById('agentModal').classList.remove('flex');
-            document.getElementById('agentModal').classList.add('hidden');
+            const modal = document.getElementById('agentModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
         }
     </script>
 </body>
